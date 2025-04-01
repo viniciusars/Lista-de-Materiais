@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import os
 import tkinter as tk
 from tkinter import filedialog
+from pathlib import Path
 
 
 def local(mensagem):
@@ -13,14 +14,12 @@ def local(mensagem):
     caminho = filedialog.askopenfilename(title= mensagem)
     return caminho
 
-
-
-def quant_postes():
+def pegar_postes():
     '''
     Lista que vai receber todos os as linhas válidas da tabela de locação
     Esses valores pré-definidos compõe o cabeçalho
     '''
-    dados = [['Número','Vértice','Deflexão','Tipo','Altura/carga','Posição','Vão de frente','Distância progressiva','Nível 1','Circuito', 'Nível 2', 'Circuito', 'Âncora', 'Estais']]
+    dados = [['Número','Vértice','Deflexão','Tipo','Altura/carga','Posição','Vão de frente','Distância progressiva','Nível 1','Circuito 1', 'Nível 2', 'Circuito 2', 'Âncora', 'Estais']]
     
     # Pegar o caminho do arquivo da tabela de locação que vai ser utilizada
     caminho=local('Selecione a tabela de locação')
@@ -56,7 +55,7 @@ def quant_postes():
 
     # No pensamento atual, faço a obtenção de todos esses valores e jogo para um arquivo .txt
     caminho_pasta = "/".join(caminho.split("/")[:-1])
-    caminho_pasta = caminho_pasta + "/infos.txt" #Obtenção do caminho que esse arquivo será gerado e salvo 
+    caminho_pasta = caminho_pasta + "/infos.csv" #Obtenção do caminho que esse arquivo será gerado e salvo 
     
     # For para escrever todos os valores presentes na lista DADOS
     with open(caminho_pasta, "w") as f:
@@ -65,10 +64,40 @@ def quant_postes():
                 if isinstance(item, float): # Esse método não aceita float para escrever, tem que transformar em str
                     item = round(item, 2)
                 if item is None: # Esse método também não aceita valores None, então tranforma-se em " "
-                    f.write(" "+";")
+                    f.write(" "+",")
                 else:
-                    f.write(str(item)+";")
+                    f.write(str(item)+",")
             f.write("\n")
-   
+
+def quant_postes():
+    caminho = os.getcwd()
+    caminho = caminho.replace("\\","/") + "/infos.csv"
+    postes = pd.read_csv(caminho, encoding= 'latin-1')
+    postes.drop(postes.columns[[14]], axis=1, inplace= True)
+    postes_unicos = postes['Tipo'].value_counts().reset_index()
+
+    caminho_planilha_descricao_postes = os.getcwd()
+    caminho_planilha_descricao_postes = caminho_planilha_descricao_postes.replace('\\','/') + '/POSTES.xlsx'
+    wb = load_workbook(caminho_planilha_descricao_postes)
+
+    colunas = []
+    indice = []
+    for sheet in wb.sheetnames:
+        for row in wb[sheet].iter_rows(min_row=2, max_col=2, min_col=2, values_only=True):
+            indice.append(row)
+        if 'N4_N3.TR_CH' in sheet:
+            sheet = sheet.replace('N4_N3.TR_CH','N4/N3.TR-CH')
+        elif 'N4_N4.TR_CH' in sheet:
+            sheet = sheet.replace('N4_N4.TR_CH','N4/N4.TR-CH')
+        else:
+            sheet = sheet.replace('_','-')
+        colunas.append(sheet)
+
+    indice = pd.DataFrame(indice)
+    indice = indice[0].sort_values(ascending=True).unique()
+    
+    df_planilha_descricao_postes = pd.DataFrame(index= indice, columns=colunas)
+    
+    print(df_planilha_descricao_postes)
 
 quant_postes()
