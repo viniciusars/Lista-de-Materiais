@@ -74,8 +74,12 @@ def quant_postes():
     caminho = caminho.replace("\\","/") + "/infos.csv"
     postes = pd.read_csv(caminho, encoding= 'latin-1')
     postes.drop(postes.columns[[14]], axis=1, inplace= True)
-    postes_unicos = postes['Tipo'].value_counts().reset_index()
-
+    postes_unicos = postes['Tipo'].value_counts()
+    for index in postes_unicos.index:
+        novo_index = index.replace('-','_')
+        novo_index = novo_index.replace('/','_')
+        postes_unicos = postes_unicos.rename(index={index : novo_index})
+   
     caminho_planilha_descricao_postes = os.getcwd()
     caminho_planilha_descricao_postes = caminho_planilha_descricao_postes.replace('\\','/') + '/POSTES.xlsx'
     wb = load_workbook(caminho_planilha_descricao_postes)
@@ -85,19 +89,24 @@ def quant_postes():
     for sheet in wb.sheetnames:
         for row in wb[sheet].iter_rows(min_row=2, max_col=2, min_col=2, values_only=True):
             indice.append(row)
-        if 'N4_N3.TR_CH' in sheet:
-            sheet = sheet.replace('N4_N3.TR_CH','N4/N3.TR-CH')
-        elif 'N4_N4.TR_CH' in sheet:
-            sheet = sheet.replace('N4_N4.TR_CH','N4/N4.TR-CH')
-        else:
-            sheet = sheet.replace('_','-')
         colunas.append(sheet)
 
     indice = pd.DataFrame(indice)
     indice = indice[0].sort_values(ascending=True).unique()
     
     df_planilha_descricao_postes = pd.DataFrame(index= indice, columns=colunas)
-    
-    print(df_planilha_descricao_postes)
+
+    for sheet in wb.sheetnames:
+        for row in wb[sheet].iter_rows(min_row=2, min_col=2, max_col=4, values_only=True):
+            df_planilha_descricao_postes.loc[row[0] ,sheet] = row[2]
+
+    df_quantidade_total_materiais = pd.DataFrame(index= indice, columns=postes_unicos.index)
+    for indice in df_planilha_descricao_postes.index:
+        for estruturas in df_planilha_descricao_postes.columns:
+            if estruturas in postes_unicos.index:
+                if type(df_planilha_descricao_postes.loc[indice, estruturas]) is int:
+                    df_quantidade_total_materiais.loc[indice, estruturas] = postes_unicos.loc[estruturas] * df_planilha_descricao_postes.loc[indice, estruturas]
+    df_quantidade_total_materiais.fillna(0, inplace=True)
+    print(df_quantidade_total_materiais)
 
 quant_postes()
