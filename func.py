@@ -53,9 +53,9 @@ def pegar_postes():
                     if valores_nulos < 14:
                         dados.append(row)
 
-    # No pensamento atual, faço a obtenção de todos esses valores e jogo para um arquivo .txt
-    caminho_pasta = "/".join(caminho.split("/")[:-1])
-    caminho_pasta = caminho_pasta + "/infos.csv" #Obtenção do caminho que esse arquivo será gerado e salvo 
+    # No pensamento atual, faço a obtenção de todos esses valores e jogo para um arquivo .csv
+    caminho_pasta = os.getcwd()
+    caminho_pasta = caminho_pasta.replace("\\", "/") + '/infos.csv' 
     
     # For para escrever todos os valores presentes na lista DADOS
     with open(caminho_pasta, "w") as f:
@@ -70,6 +70,7 @@ def pegar_postes():
             f.write("\n")
 
 def quant_postes():
+    pd.set_option('future.no_silent_downcasting', True)
     '''
     Na função pegar_postes(), foi salvo o arquivo infos.csv que contém informações sobre os elementos presentes na tabela de locação.
     Dessa forma, é necessário pegar essa informação para fazer a manipulação e a contabilização desses materiais e é isso que será 
@@ -123,6 +124,7 @@ def quant_postes():
 
     indice = pd.DataFrame(indice) 
     indice = indice[0].sort_values(ascending=True).unique()
+    
     '''
     Como eu peguei os códigos de todas as abas, eles vão aparecer repetidos, dessa forma é necessário
     pagar só os valores únicos e colocar de forma crescente para deixar para organizado
@@ -143,7 +145,7 @@ def quant_postes():
     df_quantidade_total_materiais = pd.DataFrame(index= indice, columns=postes_unicos.index) # DF com o total de materiais por estrutura 
 
     # For para fazer a multiplicação
-    for indice in df_planilha_descricao_postes.index:
+    for indices in df_planilha_descricao_postes.index:
         for estruturas in df_planilha_descricao_postes.columns:
             if estruturas in postes_unicos.index:
                 '''
@@ -151,7 +153,15 @@ def quant_postes():
                 que todas vão aparecer na tabela de locação de um parque, então, só serão escolhidas as estruturas que estão 
                 em postes_unicos (lista que mostra todas as estruturas de um parque específico)
                 '''
-                if type(df_planilha_descricao_postes.loc[indice, estruturas]) is int: # Não selecionar os elementos que não possuem valores
-                    df_quantidade_total_materiais.loc[indice, estruturas] = postes_unicos.loc[estruturas] * df_planilha_descricao_postes.loc[indice, estruturas]
+                if type(df_planilha_descricao_postes.loc[indices, estruturas]) is int: # Não selecionar os elementos que não possuem valores
+                    df_quantidade_total_materiais.loc[indices, estruturas] = postes_unicos.loc[estruturas] * df_planilha_descricao_postes.loc[indices, estruturas]
                     # Feita a multiplicação entre a quantidade de elementos num tipo de estrutura x a quantidade de vezes que aquela estrutura aparece
     df_quantidade_total_materiais.fillna(0, inplace=True) # Remover os valores NaN
+    
+    df_soma_total = pd.DataFrame(0,index= indice, columns= ['Valor Total'])
+
+    for indice in df_quantidade_total_materiais.index:
+        for coluna in df_quantidade_total_materiais.columns:
+            df_soma_total.loc[indice, 'Valor Total'] = df_soma_total.loc[indice, 'Valor Total'] + df_quantidade_total_materiais.loc[indice, coluna] 
+    print(df_soma_total)
+    
