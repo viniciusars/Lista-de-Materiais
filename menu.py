@@ -1,10 +1,13 @@
-import func
+from func import pegar_postes, quant_postes
+
 def menu():
     while True:
         print('\n--------','LISTA DE MATERIAIS','--------')
         mensagem_menu()
         resposta = int(input('Escolha a opção: '))
-        escolha(resposta)
+        continuar = escolha(resposta)
+        if not continuar:
+            break
 
 def mensagem_menu():
     print('[1] - Escolher a Tabela de Locação\n' \
@@ -15,10 +18,10 @@ def mensagem_menu():
 
 def escolha(resposta):
     match resposta:
-        case int(1):
-            func.pegar_postes()
+        case 1:
+            pegar_postes()
         case 2:
-            func.quant_postes()
+            quant_postes()
         case 3:
             print('Ainda não está pronto')
         case 4:
@@ -27,6 +30,7 @@ def escolha(resposta):
             return False
         case _:
             print('Opção inválida!')
+    return True
 
 menu()
 
