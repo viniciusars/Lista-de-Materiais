@@ -3,16 +3,59 @@ import openpyxl
 from openpyxl import load_workbook
 import os
 import tkinter as tk
+from tkinter import Tk
 from tkinter import filedialog
 from pathlib import Path
+from tkinter.filedialog import askopenfilename
 
 
-def local(mensagem):
-    root = tk.Tk()
+def local(titulo='Selecione um arquivo'):
+    root = Tk()
     root.withdraw()
-
-    caminho = filedialog.askopenfilename(title= mensagem)
+    caminho = askopenfilename(title= titulo)
+    root.destroy()
     return caminho
+
+def diretorio():
+    caminho = os.getcwd()
+    caminho = caminho.replace("\\","/")
+    return caminho
+
+#! Função para salvar a tabela de locação num csv
+def escrever_csv(caminho,   # Caminho do arquivo que vai receber esses valores
+                  dados     # Informações colhidas da tabela de locação
+                  ): 
+    with open(caminho, 'w') as f: # Recebe o local onda vai ser salvo e que vai escrever nesse arquivo
+        for row in dados: # Dados vai ser uma lista com listas dentro e cada lista representa uma linha da tabela de locação
+            '''
+            No código antigo, depois de todo valor da lista era inserida uma vírgula e,
+            quando ia pegar essa arquivo para consulta, uma nova coluna com nenhum valor
+            aparecia justamente por todo valor ser acompanhado por uma vírgulo. Por isso
+            foi inserido esse contador para que o último valor da linha não seja acompanhado
+            com a vírgulo e não ter essa coluna vazia extra
+            '''
+            count  = 0 
+            for item in row: # Outro for com cada item da linha da tabela de locação
+                count = count + 1
+                '''
+                Existe um problema com os elementos que são números e, principalmente float.
+                As casas decimais desses números crescem muito e o método open() só consegue
+                escrever valores que são str. Para resolver isso, arredonda os valores que 
+                são float e transforma tudos os valores para str.
+                '''
+                if isinstance(item, float): 
+                    item = round(item, 2)
+                # Open() também não consegue lidar com NaN, então, transforma-se para str com " " como valor
+                if item is None:
+                    f.write(" "+",")
+                
+                # Verificação do último valor da linha
+                if count != len(row):
+                    f.write(str(item)+",")
+                else:
+                    f.write(str(item))
+            f.write("\n") # No final de cada linha da tabela de locação, dá uma quebra de linha
+
 
 def pegar_postes():
     '''
@@ -21,8 +64,44 @@ def pegar_postes():
     '''
     dados = [['Número','Vértice','Deflexão','Tipo','Altura/carga','Posição','Vão de frente','Distância progressiva','Nível 1','Circuito 1', 'Nível 2', 'Circuito 2', 'Âncora', 'Estais']]
     
-    # Pegar o caminho do arquivo da tabela de locação que vai ser utilizada
-    caminho=local('Selecione a tabela de locação')
+    caminho = ""
+
+    '''
+    No momento que for para selecionar o caminho da tabela de locação pode ocorrer algum erro, dessa forma, para evitar 
+    qualquer má funcionamento da função, deve-se verificar os seguintes pontos do arquivo selecionado:
+    1 - Verificar se foi selecionado algum caminho, se não a função encerra
+    2 - Verificar se é um arquivo .xlsx, caso isso não ocorra, a função é encerrada
+    3 - Verificar se o arquivo .xlsx é uma tabela de locação, se não for, a função é encerrada
+
+    Se tudo isso for confirmado, a função continua o funcionamento.
+    '''
+
+    while True:
+        # Pegar o caminho do arquivo da tabela de locação que vai ser utilizada
+        caminho = local('Selecione a tabela de locação')
+
+        if not caminho:
+            print('Não foi selecionado nenhum arquivo!!!')
+            return print('Solicitação encerrada, chame novamente!!!')
+        
+        count = 0
+        if caminho:
+            if not '.xlsx' in caminho:
+                print('O documento escolhido não é uma arquivo .xlsx')
+                return print('Solicitação encerrada, chame novamente!!!') 
+            
+            wb_teste = load_workbook(caminho)
+            for sheet in wb_teste.sheetnames:
+                if 'TABELA DE LOCAÇÃO' in sheet:
+                    count = count + 1
+
+        if count > 0:
+            break
+        elif count == 0:
+            print('Documento escolhido não é uma Tabela de Locação!!!')
+            return print('Solicitação encerrada, chame novamente!!!')
+            
+
     
     # Carrega o documento como um workbook pela biblioteca openpyxl
     wb = load_workbook(caminho)
@@ -41,33 +120,25 @@ def pegar_postes():
                                             max_col=14, # última coluna
                                             values_only=True # Pegar os valores de dentro da célula, se remover, ele pega a referência da célula
                                             ):
-                    '''
-                    O trecho a seguir verifica quantos elementos não possuem valores (None), se a linha toda for None,
-                    essa linha não será adicionada a lista DADOS. Como 14 colunas são colhidas (14 valores), o for a seguir
-                    itera sobre esses 14 valores verificando se são None, caso todos forem, essa linha não vai ser inserida
-                    '''
-                    valores_nulos = 0
-                    for x, elemento in enumerate(row):
-                        if elemento is None:
-                            valores_nulos = valores_nulos + 1
-                    if valores_nulos < 14:
-                        dados.append(row)
+                '''
+                O trecho a seguir verifica quantos elementos não possuem valores (None), se a linha toda for None,
+                essa linha não será adicionada a lista DADOS. Como 14 colunas são colhidas (14 valores), o for a seguir
+                itera sobre esses 14 valores verificando se são None, caso todos forem, essa linha não vai ser inserida
+                '''
+                valores_nulos = 0
+                for x, elemento in enumerate(row):
+                    if elemento is None:
+                        valores_nulos = valores_nulos + 1
+                if valores_nulos < 14:
+                    dados.append(row)
 
     # No pensamento atual, faço a obtenção de todos esses valores e jogo para um arquivo .csv
-    caminho_pasta = os.getcwd()
-    caminho_pasta = caminho_pasta.replace("\\", "/") + '/infos.csv' 
+    caminho_pasta = diretorio() + '/infos.csv' 
     
     # For para escrever todos os valores presentes na lista DADOS
-    with open(caminho_pasta, "w") as f:
-         for row in dados:
-            for item in row:
-                if isinstance(item, float): # Esse método não aceita float para escrever, tem que transformar em str
-                    item = round(item, 2)
-                if item is None: # Esse método também não aceita valores None, então tranforma-se em " "
-                    f.write(" "+",")
-                else:
-                    f.write(str(item)+",")
-            f.write("\n")
+    escrever_csv(caminho_pasta, dados)
+
+pegar_postes()
 
 def quant_postes():
     pd.set_option('future.no_silent_downcasting', True)
@@ -78,9 +149,7 @@ def quant_postes():
     '''
 
     #! Parte para pegar o diretório do arquivo atual
-
-    caminho = os.getcwd() # Pega o diretório atual
-    caminho = caminho.replace("\\","/") + "/infos.csv" # Compatibiliza com o jeito correto
+    caminho = diretorio() + '/infos.csv'
     postes = pd.read_csv(caminho, encoding= 'latin-1')
     '''
     O formato do arquivo tava dando conflito com o padrão da função, por isso, teve que fazer
