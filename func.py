@@ -6,7 +6,8 @@ import tkinter as tk
 from tkinter import Tk
 from tkinter import filedialog
 from pathlib import Path
-from funcoes_acessorias import local, diretorio, escrever_csv
+from tkinter.filedialog import askopenfilename
+from funcoes_acessorias import diretorio, local, escrever_csv
 
 def pegar_postes():
     '''
@@ -30,14 +31,13 @@ def pegar_postes():
     while True:
         # Pegar o caminho do arquivo da tabela de locação que vai ser utilizada
         caminho = local('Selecione a tabela de locação')
-        # 1 - Primeiro ponto verificado 
+
         if not caminho:
             print('Não foi selecionado nenhum arquivo!!!')
             return print('Solicitação encerrada, chame novamente!!!')
         
         count = 0
         if caminho:
-            # 2 - Segundo ponto verificado
             if not '.xlsx' in caminho:
                 print('O documento escolhido não é uma arquivo .xlsx')
                 return print('Solicitação encerrada, chame novamente!!!') 
@@ -46,7 +46,7 @@ def pegar_postes():
             for sheet in wb_teste.sheetnames:
                 if 'TABELA DE LOCAÇÃO' in sheet:
                     count = count + 1
-        # 3 - Terceiro ponto verificado
+
         if count > 0:
             break
         elif count == 0:
@@ -72,25 +72,22 @@ def pegar_postes():
                                             max_col=14, # última coluna
                                             values_only=True # Pegar os valores de dentro da célula, se remover, ele pega a referência da célula
                                             ):
-                '''
-                O trecho a seguir verifica quantos elementos não possuem valores (None), se a linha toda for None,
-                essa linha não será adicionada a lista DADOS. Como 14 colunas são colhidas (14 valores), o for a seguir
-                itera sobre esses 14 valores verificando se são None, caso todos forem, essa linha não vai ser inserida
-                '''
-                valores_nulos = 0
-                for x, elemento in enumerate(row):
-                    if elemento is None:
-                        valores_nulos = valores_nulos + 1
-                if valores_nulos < 14:
-                    dados.append(row)
+                    '''
+                    O trecho a seguir verifica quantos elementos não possuem valores (None), se a linha toda for None,
+                    essa linha não será adicionada a lista DADOS. Como 14 colunas são colhidas (14 valores), o for a seguir
+                    itera sobre esses 14 valores verificando se são None, caso todos forem, essa linha não vai ser inserida
+                    '''
+                    valores_nulos = 0
+                    for x, elemento in enumerate(row):
+                        if elemento is None:
+                            valores_nulos = valores_nulos + 1
+                    if valores_nulos < 14:
+                        dados.append(row)
 
     # No pensamento atual, faço a obtenção de todos esses valores e jogo para um arquivo .csv
     caminho_pasta = diretorio() + '/infos.csv' 
-    
     # For para escrever todos os valores presentes na lista DADOS
     escrever_csv(caminho_pasta, dados)
-
-pegar_postes()
 
 def quant_postes():
     pd.set_option('future.no_silent_downcasting', True)
@@ -101,13 +98,14 @@ def quant_postes():
     '''
 
     #! Parte para pegar o diretório do arquivo atual
-    caminho = diretorio() + '/infos.csv'
+
+    caminho = diretorio() + "/infos.csv" # Compatibiliza com o jeito correto
     postes = pd.read_csv(caminho, encoding= 'latin-1')
     '''
     O formato do arquivo tava dando conflito com o padrão da função, por isso, teve que fazer
     essa modificação
     '''
-    postes.drop(postes.columns[[14]], axis=1, inplace= True) # Surgiu uma coluna a mais, foi feita a remoção
+    
     postes_unicos = postes['Tipo'].value_counts() 
     '''
     O value_counts() conta quantas vezes um valor único aparece no df e, nesse caso, quantas vezes aparece na coluna.
@@ -126,12 +124,8 @@ def quant_postes():
         postes_unicos = postes_unicos.rename(index={index : novo_index})
 
     #!  Aquisição da planilha com quais materiais vão em cada tipo de estrutura
-    caminho_planilha_descricao_postes = os.getcwd()
-    caminho_planilha_descricao_postes = caminho_planilha_descricao_postes.replace('\\','/') + '/POSTES.xlsx' 
-    '''
-    O .getcwd() vai pegar o caminho do diretório e não do arquivo em específico, por isso, tem que ser 
-    adicionado o restante do caminho '/POSTES.xlsx'
-    '''
+    caminho_planilha_descricao_postes = diretorio() + '/POSTES.xlsx' 
+
     wb = load_workbook(caminho_planilha_descricao_postes)
 
     colunas = [] # Lista com nome de todas as colunas as quais vão ser o nome dos postes
@@ -179,10 +173,17 @@ def quant_postes():
                     # Feita a multiplicação entre a quantidade de elementos num tipo de estrutura x a quantidade de vezes que aquela estrutura aparece
     df_quantidade_total_materiais.fillna(0, inplace=True) # Remover os valores NaN
     
-    df_soma_total = pd.DataFrame(0,index= indice, columns= ['Valor Total'])
+    df_quantidade_total_materiais['Valor Total'] = pd.DataFrame(0,index= indice, columns= ['Valor Total'])
 
     for indice in df_quantidade_total_materiais.index:
         for coluna in df_quantidade_total_materiais.columns:
-            df_soma_total.loc[indice, 'Valor Total'] = df_soma_total.loc[indice, 'Valor Total'] + df_quantidade_total_materiais.loc[indice, coluna] 
-    print(df_soma_total)
-    
+            if coluna != 'Valor Total':
+                df_quantidade_total_materiais.loc[indice, 'Valor Total'] = df_quantidade_total_materiais.loc[indice, 'Valor Total'] + df_quantidade_total_materiais.loc[indice, coluna] 
+
+    df_quantidade_total_materiais.reset_index(inplace=True)
+    df_quantidade_total_materiais.rename(columns={'index' :'Código do material'}, inplace=True)
+    lista_quantidade_total_materiais = [df_quantidade_total_materiais.columns.tolist()] + df_quantidade_total_materiais.values.tolist()
+    caminho_total_materiais = diretorio() + '/quantidade_materiais.csv'
+    escrever_csv(caminho_total_materiais, lista_quantidade_total_materiais)
+
+quant_postes()
