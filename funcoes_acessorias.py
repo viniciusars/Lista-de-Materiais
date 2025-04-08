@@ -15,11 +15,10 @@ def diretorio():
     return caminho
 
 #! Função para salvar a tabela de locação num csv
-def escrever_csv(caminho,   # Caminho do arquivo que vai receber esses valores
-                  dados     # Informações colhidas da tabela de locação
-                  ): 
+def escrever_csv(caminho, dados): 
     with open(caminho, 'w') as f: # Recebe o local onda vai ser salvo e que vai escrever nesse arquivo
         for row in dados: # Dados vai ser uma lista com listas dentro e cada lista representa uma linha da tabela de locação
+            cont = 1
             '''
             No código antigo, depois de todo valor da lista era inserida uma vírgula e,
             quando ia pegar essa arquivo para consulta, uma nova coluna com nenhum valor
@@ -27,9 +26,7 @@ def escrever_csv(caminho,   # Caminho do arquivo que vai receber esses valores
             foi inserido esse contador para que o último valor da linha não seja acompanhado
             com a vírgulo e não ter essa coluna vazia extra
             '''
-            count  = 0 
             for item in row: # Outro for com cada item da linha da tabela de locação
-                count = count + 1
                 '''
                 Existe um problema com os elementos que são números e, principalmente float.
                 As casas decimais desses números crescem muito e o método open() só consegue
@@ -38,13 +35,22 @@ def escrever_csv(caminho,   # Caminho do arquivo que vai receber esses valores
                 '''
                 if isinstance(item, float): 
                     item = round(item, 2)
-                # Open() também não consegue lidar com NaN, então, transforma-se para str com " " como valor
-                if item is None:
-                    f.write(" "+",")
                 
-                # Verificação do último valor da linha
-                if count != len(row):
-                    f.write(str(item)+",")
+                '''
+                O último ponto de verificação é o da última vírgula. Depois de todo valor é adicionada uma 
+                vírgulo, pois é um arquivo csv. Porém, não deve ser inserida essa vírgulo no último elemento, 
+                pois, se isso acontecer, o arquivo entenderá que existe uma coluna extra que na realidade não
+                existe.
+                '''
+                if cont != len(row):
+                    if item is None:
+                        f.write(" "+",")
+                    else:
+                        f.write(str(item)+",")
                 else:
                     f.write(str(item))
+                print(len(row))
+                print(cont)
+                cont = cont + 1
             f.write("\n") # No final de cada linha da tabela de locação, dá uma quebra de linha
+            
