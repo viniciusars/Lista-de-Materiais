@@ -1,6 +1,23 @@
 from funcoes_acessorias import local, escrever_csv, local_de_salvar
 from openpyxl import load_workbook
 
+'''
+Funcionamento desse módulo
+Funções:
+1 - verificar_arquivo() -           Esse primeira função vai servir para verificar se o arquivo escolhido
+                                    foi escolhido corretamente. Verifica se foi escolhido algum arquivo,
+                                    se foi escolhido um arquivo .xlsx e se, esse arquivo, é uma tabela de 
+                                    locação.
+
+2 - extrair_valores_planilha() -    Essa função vai pegar os valores que estão inseridos na tabela de 
+                                    locação (sem formatação, sem um padrão fácil de manipular) e 
+                                    transformar num arquivo .csv com colunas.
+
+3 - pegar_postes() -                Função final. Vai utilizar algumas funções anteriores desse método
+                                    e funções de outros métodos a fim de pegar a 'tabela de locação.xlsx'
+                                    e transformar num arquivo .csv pronto para ser utilizado posteriormente
+'''
+
 
 def verificar_arquivo(caminho):
     if not caminho:
@@ -16,7 +33,9 @@ def verificar_arquivo(caminho):
         print('O arquivo não é de uma Tabela de Locação')
         return False
     return True
-        
+
+
+
 def extrair_valores_planilha(wb):
     dados: list = [['Número','Vértice','Deflexão','Tipo','Altura/carga','Posição','Vão de frente','Distância progressiva','Nível 1','Circuito 1', 'Nível 2', 'Circuito 2', 'Âncora', 'Estais']]
     for sheet in wb.sheetnames:
@@ -25,6 +44,8 @@ def extrair_valores_planilha(wb):
                     if sum(v is None for v in row) < 14:
                         dados.append(row)
     return dados
+
+
 
 def pegar_postes():
     caminho: str = local('Arquivo da Tabela de Locação')
@@ -35,6 +56,8 @@ def pegar_postes():
         dados = extrair_valores_planilha(wb)
         caminho = local_de_salvar('Tabela_de_Locacao.csv')
         escrever_csv(caminho, dados)
+
+
 
 if __name__ == '__main__':
     pegar_postes()
