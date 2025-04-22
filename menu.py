@@ -30,7 +30,7 @@ def escolha(resposta):
             else:
                 print('''
 Ainda não foi escolhida nenhuma tabela de locação
-Faça a opção 1 para dar proseguimento!!!
+Faça a opção 1 para dar prosseguimento!!!
                       ''')
         case 3:
             print('Ainda não está pronto')
