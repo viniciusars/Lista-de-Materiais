@@ -61,4 +61,13 @@ def escrever_csv(caminho, dados):
                     f.write(str(item))
                 cont = cont + 1
             f.write("\n") # No final de cada linha da tabela de locação, dá uma quebra de linha
-            
+
+def escrever_txt(caminho, variavel):
+    with open(caminho, "w") as f:
+        for linha in range(0, len(variavel)):
+            for coluna in range(0, len(variavel[0])):
+                f.write(f"{variavel[linha][coluna]}")
+                if coluna < len(variavel[0])-1:   
+                    f.write(',')
+            f.write("\n")
+
