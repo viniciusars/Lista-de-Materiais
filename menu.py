@@ -1,4 +1,6 @@
-from func import pegar_postes, quant_postes
+from quantidade_total import gerar_df_info_postes
+from tabela_de_locacao import pegar_postes
+from funcoes_acessorias import verificar_existencia_arquivos
 
 def menu():
     while True:
@@ -21,16 +23,25 @@ def escolha(resposta):
         case 1:
             pegar_postes()
         case 2:
-            quant_postes()
+            verificador = verificar_existencia_arquivos('./data/Tabela_de_Locacao.csv')
+            if verificador:
+                resultado = gerar_df_info_postes()
+                print(resultado)
+            else:
+                print('''
+Ainda não foi escolhida nenhuma tabela de locação
+Faça a opção 1 para dar proseguimento!!!
+                      ''')
         case 3:
             print('Ainda não está pronto')
         case 4:
             print('Ainda não está pronto')
         case 0:
+            print('Encerrando Programa!!!')
             return False
         case _:
             print('Opção inválida!')
     return True
 
-menu()
-
+if __name__ == "__main__":
+    menu()
