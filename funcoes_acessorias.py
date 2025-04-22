@@ -14,6 +14,12 @@ def diretorio():
     caminho = caminho.replace("\\","/")
     return caminho
 
+def verificar_existencia_arquivos(caminho):
+    if os.path.exists(caminho):
+        return True
+    else:
+        return False
+
 def local_de_salvar(nome_do_arquivo):
     caminho_final = diretorio() + '/' + nome_do_arquivo
     return caminho_final
