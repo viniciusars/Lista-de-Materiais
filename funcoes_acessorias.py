@@ -14,6 +14,10 @@ def diretorio():
     caminho = caminho.replace("\\","/")
     return caminho
 
+def local_de_salvar(nome_do_arquivo):
+    caminho_final = diretorio() + '/' + nome_do_arquivo
+    return caminho_final
+
 #! Função para salvar a tabela de locação num csv
 def escrever_csv(caminho, dados): 
     with open(caminho, 'w') as f: # Recebe o local onda vai ser salvo e que vai escrever nesse arquivo
