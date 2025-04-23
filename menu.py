@@ -1,6 +1,6 @@
-from quantidade_total import gerar_df_info_postes
-from tabela_de_locacao import pegar_postes
-from funcoes_acessorias import verificar_existencia_arquivos
+from modulos.quantidade_total import gerar_df_info_postes
+from modulos.tabela_de_locacao import pegar_postes
+from modulos.funcoes_acessorias import verificar_existencia_arquivos
 
 def menu():
     while True:
@@ -14,7 +14,7 @@ def menu():
 def mensagem_menu():
     print('[1] - Escolher a Tabela de Locação\n' \
     '[2] - Contabilizar as materiais padrão\n' \
-    '[3] - Contabilizar os parafusos\n' \
+    '[3] - Inserir valores dos cabos\n' \
     '[4] - Salvar arquivos\n' \
     '[0] - Encerrar\n')
 
