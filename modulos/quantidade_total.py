@@ -1,4 +1,4 @@
-from utils.funcoes_acessorias import local_de_salvar
+from funcoes_acessorias import local_de_salvar
 import pandas as pd
 from openpyxl import load_workbook
 

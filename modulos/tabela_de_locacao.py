@@ -1,4 +1,4 @@
-from utils.funcoes_acessorias import local, escrever_csv, local_de_salvar
+from funcoes_acessorias import local, escrever_csv, local_de_salvar
 from openpyxl import load_workbook
 
 '''
