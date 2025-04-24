@@ -1,6 +1,7 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import os
+import pandas as pd
 
 def local(titulo='Selecione um arquivo'):
     root = Tk()
@@ -71,3 +72,15 @@ def escrever_txt(caminho, variavel):
                     f.write(',')
             f.write("\n")
 
+def ler_txt(caminho):
+    conteudo = []
+    with open(caminho, "r") as f:
+        for line in f.readlines():
+            line = line.replace('\n','').split(',')
+            conteudo.append(line)
+    conteudo = pd.DataFrame(conteudo[1:], columns=conteudo[0])
+    return conteudo
+
+if __name__ == '__main__':
+    conteudo = ler_txt('./data/cabos.txt')
+    
