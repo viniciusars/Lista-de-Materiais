@@ -1,5 +1,5 @@
 import numpy as np
-from .funcoes_acessorias import verificar_existencia_arquivos, escrever_txt, ler_txt 
+from .funcoes_acessorias import verificar_existencia_arquivos, escrever_txt, ler_txt, apagar_arquivo 
 
 def cabos():
     verificador = menu_cabos('verificar')
@@ -12,6 +12,8 @@ def cabos():
         elif resposta == 2:
             menu_cabos('ver_existente')
             menu_cabos('editar')
+        elif resposta == 3:
+            menu_cabos('apagar')
 
 
 def menu_cabos(parte_do_menu):
@@ -23,17 +25,24 @@ def menu_cabos(parte_do_menu):
             return verificador
         
         case 'registro_existente':
-            print('Já existe registro de cabos!!!\n')
+            print('\nJá existe registro de cabos!!!')
             resposta = int(input('''
 [1] Novo Registro
 [2] Ver o existente
+[3] Apagar registro existente
 -> '''))
             return resposta
         
         case 'novo_registro':
-            quantidade = int(input('Deseja inserir quantos cabos?: ').strip())
+            print('\n','-'*10,'Registro de cabos','-'*10)
+            try: 
+                quantidade = int(input('Deseja inserir quantos cabos?: ').strip())
+            except:
+                return print('Quantidade inserida não é um valor!\n')
+            
             dados_cabos = inserir_cabos(quantidade)
-            escrever_txt(endereco,dados_cabos)
+            if len(dados_cabos) > 0:
+                escrever_txt(endereco,dados_cabos)
 
         case 'ver_existente':
             dados_cabos = ler_txt(endereco)
@@ -45,12 +54,15 @@ def menu_cabos(parte_do_menu):
                 dados_cabos = ler_txt(endereco)
                 
                 dados_cabos.loc[escolha_editar, 'Nome do Cabo'] = (str(input('Tipo de cabo: ')))
-                dados_cabos.loc[escolha_editar, 'Quantidade(m)'] = (input('Quantidade do cabo: '))
+                dados_cabos.loc[escolha_editar, 'Quantidade(m)'] = (int(input('Quantidade do cabo: ')))
+    
 
                 continuar = input('Deseja Continuar?[S/N]').capitalize().strip()
 
                 if continuar == 'N':
-                    break                    
+                    break     
+        case 'apagar':
+            apagar_arquivo('./data/cabos.txt')
 
 
 
@@ -58,7 +70,26 @@ def inserir_cabos(quantidade):
     cabos = np.zeros((quantidade+1, 2), dtype=object)
     cabos[0] = ['Nome do Cabo', 'Quantidade(m)']
     for cabo in range(1, quantidade+1):
-        cabos[cabo][0] = (str(input('Tipo de cabo: ')))
-        cabos[cabo][1] = (input('Quantidade do cabo: '))
-    return cabos        
+        cont = 0
+        while True:
+            cont += 1
+
+            print('')
+            print(f'{cabo}º:')
+        
+            try: 
+                cabos[cabo][0] = (str(input('Tipo de cabo: ').strip().capitalize()))
+                cabos[cabo][1] = (int(input('Quantidade do cabo: ')))
+            except:
+                print('Erro na inserção de algum valor')
+                if cont == 3:
+                    break
+            else:
+                break
+        if cont == 3:
+            break
+    if cont == 3:
+        return ''
+    else:
+        return cabos        
 
