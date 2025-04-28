@@ -81,6 +81,12 @@ def ler_txt(caminho):
     conteudo = pd.DataFrame(conteudo[1:], columns=conteudo[0])
     return conteudo
 
+def apagar_arquivo(arquivo):
+    if not os.path.exists(arquivo):
+        print('Esse arquivo não existe')
+    else:
+        os.remove(arquivo)
+        print(f'O arquivo {arquivo} foi removido com sucesso')
+
 if __name__ == '__main__':
     conteudo = ler_txt('./data/cabos.txt')
-    
