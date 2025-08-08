@@ -56,6 +56,7 @@ def pegar_postes():
         dados = extrair_valores_planilha(wb)
         caminho = local_de_salvar('/data/Tabela_de_Locacao.csv')
         escrever_csv(caminho, dados)
+        print('Informações da tabela de locação obtidas!!!')
 
 
 

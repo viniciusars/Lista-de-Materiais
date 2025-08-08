@@ -1,0 +1,216 @@
+{
+    "padroes" : {
+        "N1_TODO": {
+            "CRUZETA": 1,
+            "PARAFUSO_SIMPLES": 3,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 0,
+            "SOBRA": 1
+        },
+
+        "N4_CIMA": {
+            "CRUZETA": 2,
+            "PARAFUSO_SIMPLES": 0,
+            "PARAFUSO DUPLO": 3,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 2,
+            "SOBRA": 1
+        },
+
+        "N4_BAIXO": {
+            "CRUZETA": 2,
+            "PARAFUSO_SIMPLES": 2,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 0,
+            "SOBRA": 1
+        },
+
+        "N3_CIMA": {
+            "CRUZETA": 2,
+            "PARAFUSO_SIMPLES": 3,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 1,
+            "PORCA_OLHAL": 1,
+            "SOBRA": 1
+        },
+
+        "N3_BAIXO": {
+            "CRUZETA": 2,
+            "PARAFUSO_SIMPLES": 3,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 1,
+            "PORCA_OLHAL": 1,
+            "SOBRA": 1
+        },
+
+        "CHAVE": {
+            "CRUZETA": 2,
+            "PARAFUSO_SIMPLES": 4,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 0,
+            "SOBRA": 1
+        },
+
+        "SUSPENSAO_NU": {
+            "CRUZETA": 0,
+            "PARAFUSO_SIMPLES": 2,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 0,
+            "SOBRA": 1
+        },
+
+        "SUSPENSAO": {
+            "CRUZETA": 1,
+            "PARAFUSO_SIMPLES": 3,
+            "PARAFUSO DUPLO": 0,
+            "ARRUELA": 2,
+            "PORCA": 2,
+            "PORCA_OLHAL": 0,
+            "SOBRA": 1
+        }
+    },
+
+    "estruturas" : {
+        "N4": {
+            "NIVEIS": 1,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N4_CIMA", "N4_BAIXO"],
+                "INVERTE": 0
+            }
+        },
+
+        "2N4": {
+            "NIVEIS": 2,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N4_CIMA", "N4_BAIXO"],
+                "INVERTE": 0
+            },
+            
+            "NIVEL 2": {
+                "DISTANCIA": 1.4,
+                "CONSTRUCAO": ["N4_CIMA", "N4_BAIXO"],
+                "INVERTE": 0
+            }
+        },
+
+        "N1": {
+            "NIVEIS": 1,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N1_TODO"],
+                "INVERTE": 0
+            }
+        },
+
+        "2N1": {
+            "NIVEIS": 2,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N1_TODO"],
+                "INVERTE": 0
+            },
+            
+            "NIVEL 2": {
+                "DISTANCIA": 1.4,
+                "CONSTRUCAO": ["N1_TODO"],
+                "INVERTE": 0
+            }
+        },
+
+        "N3-3": {
+            "NIVEIS": 2,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 1
+            },
+            
+            "NIVEL 2": {
+                "DISTANCIA": 1.25,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 0
+            }
+        },
+
+        "2N3-3": {
+            "NIVEIS": 4,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 1
+            },
+            
+            "NIVEL 2": {
+                "DISTANCIA": 1.25,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 0
+            },
+
+            "NIVEL 3": {
+                "DISTANCIA": 2.5,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 1
+            },
+
+            "NIVEL 4": {
+                "DISTANCIA": 3.55,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 0
+            }
+        },
+
+        "N4/N4.N3": {
+            "NIVEIS": 3,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N4_CIMA","N4_BAIXO"],
+                "INVERTE": 0
+            },
+
+            "NIVEL 2": {
+                "DISTANCIA": 1.4,
+                "CONSTRUCAO": ["N4_CIMA","N4_BAIXO"],
+                "INVERTE": 0
+            },
+
+            "NIVEL 3": {
+                "DISTANCIA": 2.45,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 1            
+            }
+        },
+        "N3-3/N3-3.B": {
+            "NIVEIS": 3,
+            "NIVEL 1": {
+                "DISTANCIA": 0.2,
+                "CONSTRUCAO": ["N4_CIMA","N4_BAIXO"],
+                "INVERTE": 0
+            },
+
+            "NIVEL 2": {
+                "DISTANCIA": 1.4,
+                "CONSTRUCAO": ["N4_CIMA","N4_BAIXO"],
+                "INVERTE": 0
+            },
+
+            "NIVEL 3": {
+                "DISTANCIA": 2.45,
+                "CONSTRUCAO": ["N3_CIMA","N3_BAIXO"],
+                "INVERTE": 1            
+            }
+        }
+    }
+}

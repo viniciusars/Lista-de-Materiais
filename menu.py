@@ -1,15 +1,21 @@
 from modulos.quantidade_total import gerar_df_info_postes
 from modulos.tabela_de_locacao import pegar_postes
 from modulos.funcoes_acessorias import verificar_existencia_arquivos
-
+from modulos.quantidade_cabos import cabos
+   
 def menu():
     while True:
+        print('-'*50)
         print('\n--------','LISTA DE MATERIAIS','--------')
         mensagem_menu()
-        resposta = int(input('Escolha a opção: '))
-        continuar = escolha(resposta)
-        if not continuar:
+        try:
+            resposta = int(input('Escolha a opção: '))
+            escolha(resposta)
+        except: 
+            print('Opção inválida')
+        if resposta == 0:
             break
+        print('-'*50,'\n')
 
 def mensagem_menu():
     print('[1] - Escolher a Tabela de Locação\n' \
@@ -33,7 +39,7 @@ Ainda não foi escolhida nenhuma tabela de locação
 Faça a opção 1 para dar prosseguimento!!!
                       ''')
         case 3:
-            print('Ainda não está pronto')
+            cabos()
         case 4:
             print('Ainda não está pronto')
         case 0:
